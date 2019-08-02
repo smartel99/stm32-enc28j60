@@ -29,12 +29,19 @@ uint8_t enc28j60_SendByte(uint8_t tx){
 }
 
 
-uint8_t enc28j60ReadOp(uint8_t op, uint8_t address){
+uint8_t enc28j60ReadOp(uint8_t op, uint8_t address) {
 	uint8_t temp;
-	enableChip;
+	enableChip
+	;
 	enc28j60_SendByte(op | (address & ADDR_MASK));
-	enc28j60_SendByte(data);
+	temp = enc28j60_SendByte(0xFF); // Do a 1st read, dummy read in some cases.
+	if(address&0x80)
+		temp = enc28j60_SendByte(0xFF);
+	
+	// Release CS
 	disableChip;
+	
+	return temp;
 }
 
 
